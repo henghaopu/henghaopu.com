@@ -6,6 +6,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from '@remix-run/react';
+import faviconAssetUrl from './assets/favicon.svg';
 
 /**
  * Reference: https://remix.run/docs/en/main/route/links
@@ -13,7 +14,7 @@ import {
  * Returns an array of link objects that specify the favicon for the HTML document
  */
 export const links: LinksFunction = () => {
-  return [{ rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' }];
+  return [{ rel: 'icon', type: 'image/svg+xml', href: faviconAssetUrl }];
 };
 
 export function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
