@@ -6,11 +6,10 @@ export const meta: MetaFunction = () => {
     { name: 'description', content: 'Welcome to Remix!' },
   ];
 };
-
 export default function Index() {
   return (
-    <div style={{ lineHeight: '1.8' }}>
-      <h1>Welcome to Remix</h1>
+    <div className="leading-5 p-4">
+      <h1 className="text-xl">Welcome to Remix</h1>
       <ul>
         <li>
           <a

@@ -8,12 +8,14 @@ import {
 } from '@remix-run/react';
 import faviconAssetUrl from './assets/favicon.svg';
 import fontStylesheetUrl from './styles/fonts.css?url';
+import tailwindStylesheetUrl from './styles/tailwind.css?url';
 
 // Reference: https://remix.run/docs/en/main/route/links
 export const links: LinksFunction = () => {
   return [
     { rel: 'icon', type: 'image/svg+xml', href: faviconAssetUrl },
     { rel: 'stylesheet', href: fontStylesheetUrl },
+    { rel: 'stylesheet', href: tailwindStylesheetUrl },
   ];
 };
 
