@@ -1,0 +1,117 @@
+@font-face {
+  font-display: swap;
+  font-family: 'Barlow';
+  font-style: normal;
+  font-weight: 100;
+  /* Files in the public directory are served at the root path. */
+  /* Instead of /public/fonts/barlow/Barlow-Thin.ttf, use /fonts/barlow/Barlow-Thin.ttf */
+  src: url('/fonts/barlow/Barlow-Thin.ttf') format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Barlow';
+  font-style: italic;
+  font-weight: 100;
+  src: url('/fonts/barlow/Barlow-ThinItalic.ttf') format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Barlow';
+  font-style: normal;
+  font-weight: 200;
+  src: url('/fonts/barlow/Barlow-ExtraLight.ttf') format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Barlow';
+  font-style: italic;
+  font-weight: 200;
+  src: url('/fonts/barlow/Barlow-ExtraLightItalic.ttf') format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Barlow';
+  font-style: normal;
+  font-weight: 300;
+  src: url('/fonts/barlow/Barlow-Light.ttf') format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Barlow';
+  font-style: italic;
+  font-weight: 300;
+  src: url('/fonts/barlow/Barlow-LightItalic.ttf') format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Barlow';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/barlow/Barlow-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Barlow';
+  font-style: italic;
+  font-weight: 400;
+  src: url('/fonts/barlow/Barlow-Italic.ttf') format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Barlow';
+  font-style: normal;
+  font-weight: 500;
+  src: url('/fonts/barlow/Barlow-Medium.ttf') format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Barlow';
+  font-style: italic;
+  font-weight: 500;
+  src: url('/fonts/barlow/Barlow-MediumItalic.ttf') format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Barlow';
+  font-style: normal;
+  font-weight: 600;
+  src: url('/fonts/barlow/Barlow-SemiBold.ttf') format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Barlow';
+  font-style: italic;
+  font-weight: 600;
+  src: url('/fonts/barlow/Barlow-SemiBoldItalic.ttf') format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Barlow';
+  font-style: normal;
+  font-weight: 700;
+  src: url('/fonts/barlow/Barlow-Bold.ttf') format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Barlow';
+  font-style: italic;
+  font-weight: 700;
+  src: url('/fonts/barlow/Barlow-BoldItalic.ttf') format('truetype');
+}
+
+html {
+  font-family: Barlow, system-ui, sans-serif;
+}

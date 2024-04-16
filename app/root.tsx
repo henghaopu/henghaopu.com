@@ -7,14 +7,14 @@ import {
   ScrollRestoration,
 } from '@remix-run/react';
 import faviconAssetUrl from './assets/favicon.svg';
+import fontStylesheetUrl from './styles/fonts.css?url';
 
-/**
- * Reference: https://remix.run/docs/en/main/route/links
- * Add links to the page by exporting a links function
- * Returns an array of link objects that specify the favicon for the HTML document
- */
+// Reference: https://remix.run/docs/en/main/route/links
 export const links: LinksFunction = () => {
-  return [{ rel: 'icon', type: 'image/svg+xml', href: faviconAssetUrl }];
+  return [
+    { rel: 'icon', type: 'image/svg+xml', href: faviconAssetUrl },
+    { rel: 'stylesheet', href: fontStylesheetUrl },
+  ];
 };
 
 export function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
