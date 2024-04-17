@@ -1,4 +1,5 @@
 import type { MetaFunction } from '@remix-run/node';
+import { Button } from '~/ui/shadcn/button';
 
 export const meta: MetaFunction = () => {
   return [
@@ -34,6 +35,7 @@ export default function Index() {
             Remix Docs
           </a>
         </li>
+        <Button variant="outline">Outline</Button>
       </ul>
     </div>
   );
