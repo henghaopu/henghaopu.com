@@ -1,4 +1,0 @@
-/* Reference: https://flaviocopes.com/fix-unknown-at-rule-tailwind/#:~:text=Problem%3A%20you%20include%20Tailwind%20in,Tailwind%20CSS%E2%80%9D%20from%20the%20list. */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
