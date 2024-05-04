@@ -3,40 +3,21 @@ import { Button } from '~/ui/shadcn/button';
 
 export const meta: MetaFunction = () => {
   return [
-    { title: 'New Remix App' },
-    { name: 'description', content: 'Welcome to Remix!' },
+    { title: 'Remark' },
+    { name: 'description', content: 'Welcome to Remark' },
   ];
 };
 export default function Index() {
   return (
     <div className="leading-5 p-4">
-      <h1 className="text-xl">Welcome to Remix</h1>
-      <ul>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/blog"
-            rel="noreferrer"
-          >
-            15m Quickstart Blog Tutorial
-          </a>
-        </li>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/jokes"
-            rel="noreferrer"
-          >
-            Deep Dive Jokes App Tutorial
-          </a>
-        </li>
-        <li>
-          <a target="_blank" href="https://remix.run/docs" rel="noreferrer">
-            Remix Docs
-          </a>
-        </li>
+      <h1 className="text-xl pb-4">Welcome to Remark!</h1>
+      <div className="flex gap-4">
+        <Button variant="default">Default</Button>
         <Button variant="outline">Outline</Button>
-      </ul>
+        <Button variant="secondary">Secondary</Button>
+        <Button variant="ghost">Ghost</Button>
+        <Button variant="destructive">Destructive</Button>
+      </div>
     </div>
   );
 }
