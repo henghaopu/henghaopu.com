@@ -1,5 +1,6 @@
 import { LinksFunction } from '@remix-run/node';
 import {
+  Link,
   Links,
   Meta,
   Outlet,
@@ -30,11 +31,11 @@ export function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
         <Links />
       </head>
       <body className="h-full flex flex-col">
-        <header>
-          <div className="flex items-center m-4">
+        <header className="flex">
+          <Link className="flex items-center p-4" to="/">
             <img src={logoUrl} alt="Remark Logo" width="36" />
-            <p className="text-3xl font-medium">Remark</p>
-          </div>
+            <p className="text-3xl font-medium hover:underline">Remark</p>
+          </Link>
         </header>
         {children}
         <footer className="text-center p-2">
