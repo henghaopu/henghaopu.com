@@ -9,7 +9,7 @@ export const meta: MetaFunction = () => {
 };
 export default function Index() {
   return (
-    <div className="leading-5 p-4">
+    <div className="leading-5 p-4 h-full">
       <h1 className="text-xl pb-4">Welcome to Remark!</h1>
       <div className="flex gap-4">
         <Button variant="default">Default</Button>

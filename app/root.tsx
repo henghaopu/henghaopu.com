@@ -7,6 +7,7 @@ import {
   ScrollRestoration,
 } from '@remix-run/react';
 import faviconAssetUrl from './assets/favicon.svg';
+import logoUrl from './assets/logo.svg';
 import fontStylesheetUrl from './styles/fonts.css?url';
 import globalStylesheetUrl from './styles/global.css?url';
 
@@ -28,8 +29,17 @@ export function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
         <Meta />
         <Links />
       </head>
-      <body className="h-full">
+      <body className="h-full flex flex-col">
+        <header>
+          <div className="flex items-center m-4">
+            <img src={logoUrl} alt="Remark Logo" width="36" />
+            <p className="text-3xl font-medium">Remark</p>
+          </div>
+        </header>
         {children}
+        <footer className="text-center p-2">
+          &copy; {new Date().getFullYear()} Remark
+        </footer>
         <ScrollRestoration />
         <Scripts />
       </body>
