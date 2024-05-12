@@ -37,7 +37,7 @@ export function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
             <p className="text-3xl font-medium hover:underline">Remark</p>
           </Link>
         </header>
-        {children}
+        <div className="h-full overflow-y-hidden">{children}</div>
         <footer className="text-center p-2">
           &copy; {new Date().getFullYear()} Remark
         </footer>

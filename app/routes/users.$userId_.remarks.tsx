@@ -34,29 +34,33 @@ export default function RemarksRoutes() {
 
   return (
     <div className="flex h-full border-8 border-blue-500 p-4 gap-4">
-      <div className="flex flex-col">
-        <h1 className="text-h1">{ownerDisplayName}'s Remarks</h1>
-        <Link
-          to=".."
-          relative="path"
-          className="hover:underline p-4 font-semibold"
-        >
-          Back to Profile
-        </Link>
-        {data.remarks.map(remark => (
-          <li key={remark.id} className="p-4">
-            <NavLink
-              to={remark.id}
-              className={({ isActive }) =>
-                `hover:underline p-4 ${isActive ? 'bg-accent' : ''}`
-              }
-            >
-              {remark.title}
-            </NavLink>
-          </li>
-        ))}
+      <div className="flex flex-col min-w-72">
+        <h1 className="text-2xl font-bold">{ownerDisplayName}'s Remarks</h1>
+        <div className="grow overflow-y-auto">
+          <Link
+            to=".."
+            relative="path"
+            className="block hover:underline p-4 font-semibold"
+          >
+            Back to Profile
+          </Link>
+          {data.remarks.map(remark => (
+            <li key={remark.id} className="list-none">
+              <NavLink
+                to={remark.id}
+                className={({ isActive }) =>
+                  `block hover:underline p-4 ${isActive ? 'bg-accent' : ''}`
+                }
+              >
+                {remark.title}
+              </NavLink>
+            </li>
+          ))}
+        </div>
       </div>
-      <Outlet />
+      <div className="grow h-full">
+        <Outlet />
+      </div>
     </div>
   );
 }

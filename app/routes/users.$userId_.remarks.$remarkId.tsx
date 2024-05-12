@@ -21,9 +21,11 @@ export default function remarkRoute() {
   const data = useLoaderData<typeof loader>();
 
   return (
-    <div className="border-8 border-green-500 flex-grow p-4">
-      <h2 className="text-h2">{data.remark.title}</h2>
-      <p className="text-body-md">{data.remark.content}</p>
+    <div className="border-8 border-green-500 p-4 h-full flex flex-col">
+      <h2 className="text-h2 mb-2">{data.remark.title}</h2>
+      <div className="overflow-y-auto grow">
+        <p className="text-body-md">{data.remark.content}</p>
+      </div>
     </div>
   );
 }
