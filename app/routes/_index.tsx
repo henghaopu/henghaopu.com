@@ -19,7 +19,7 @@ export default function Index() {
         <Button variant="ghost">Ghost</Button>
         <Button variant="destructive">Destructive</Button>
       </div>
-      <Link to="users/heng-hao" className="hover:underline">
+      <Link to="users/henghao" className="hover:underline">
         Heng-Hao
       </Link>
     </div>
