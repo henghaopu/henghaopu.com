@@ -1,6 +1,7 @@
 import { LoaderFunctionArgs, json } from '@remix-run/node';
 import { useLoaderData, useParams } from '@remix-run/react';
 import { db } from '~/utils/db.server';
+import { invariantResponse } from '~/utils/misc';
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const remark = db.remark.findFirst({
@@ -11,8 +12,9 @@ export async function loader({ params }: LoaderFunctionArgs) {
     },
   });
 
+  invariantResponse(remark, 'Remark not found', { status: 404 });
+
   return json({
-    // @ts-expect-error
     remark: { title: remark.title, content: remark.content },
   });
 }

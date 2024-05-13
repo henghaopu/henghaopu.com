@@ -1,6 +1,7 @@
 import { LoaderFunctionArgs, json } from '@remix-run/node';
 import { Link, NavLink, Outlet, useLoaderData } from '@remix-run/react';
 import { db } from '~/utils/db.server';
+import { invariantResponse } from '~/utils/misc';
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const owner = db.user.findFirst({
@@ -21,8 +22,9 @@ export async function loader({ params }: LoaderFunctionArgs) {
     },
   });
 
+  invariantResponse(owner, 'Owner not found', { status: 404 });
+
   return json({
-    // @ts-expect-error
     owner: { name: owner.name, username: owner.username },
     remarks: remarks.map(remark => ({ id: remark.id, title: remark.title })),
   });
