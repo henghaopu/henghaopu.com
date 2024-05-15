@@ -1,5 +1,7 @@
 import { LoaderFunctionArgs, json } from '@remix-run/node';
 import { Link, NavLink, Outlet, useLoaderData } from '@remix-run/react';
+import { ResizablePanelGroup } from '~/ui/shadcn/resizable';
+import { Separator } from '~/ui/shadcn/separator';
 import { db } from '~/utils/db.server';
 import { invariantResponse } from '~/utils/misc';
 
@@ -35,9 +37,12 @@ export default function RemarksRoutes() {
   const ownerDisplayName = data.owner.name ?? data.owner.username;
 
   return (
-    <div className="flex h-full border-8 border-blue-500 p-4 gap-4">
+    <ResizablePanelGroup direction="horizontal" className="flex h-full border">
       <div className="flex flex-col min-w-72">
-        <h1 className="text-2xl font-bold">{ownerDisplayName}'s Remarks</h1>
+        <h1 className="text-2xl font-medium p-4">
+          {ownerDisplayName}'s Remarks
+        </h1>
+        <Separator />
         <div className="grow overflow-y-auto">
           <Link
             to=".."
@@ -60,9 +65,10 @@ export default function RemarksRoutes() {
           ))}
         </div>
       </div>
+      <Separator orientation="vertical" />
       <div className="grow h-full">
         <Outlet />
       </div>
-    </div>
+    </ResizablePanelGroup>
   );
 }

@@ -31,15 +31,17 @@ export function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
         <Links />
       </head>
       <body className="h-full flex flex-col">
-        <header className="flex">
+        <header className="container flex">
           <Link className="flex items-center p-4" to="/">
             <img src={logoUrl} alt="Remark Logo" width="36" />
             <p className="text-3xl font-medium hover:underline">Remark</p>
           </Link>
         </header>
-        <div className="h-full overflow-y-hidden">{children}</div>
-        <footer className="text-center p-2">
-          &copy; {new Date().getFullYear()} Remark
+        <div className="container h-full overflow-y-hidden">{children}</div>
+        <footer className="container py-2">
+          <div className="text-center">
+            &copy; {new Date().getFullYear()} Remark
+          </div>
         </footer>
         <ScrollRestoration />
         <Scripts />
