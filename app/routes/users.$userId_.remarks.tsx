@@ -1,3 +1,4 @@
+import { ReaderIcon, ResetIcon } from '@radix-ui/react-icons';
 import { LoaderFunctionArgs, json } from '@remix-run/node';
 import { Link, NavLink, Outlet, useLoaderData } from '@remix-run/react';
 import { ResizablePanelGroup } from '~/ui/shadcn/resizable';
@@ -49,7 +50,10 @@ export default function RemarksRoutes() {
             relative="path"
             className="block hover:underline p-4 font-semibold"
           >
-            Back to Profile
+            <div className="flex items-center">
+              <ResetIcon className="mr-2 h-4 w-4" />
+              <p>Back to Profile</p>
+            </div>
           </Link>
           {data.remarks.map(remark => (
             <li key={remark.id} className="list-none">
@@ -59,7 +63,10 @@ export default function RemarksRoutes() {
                   `block hover:underline p-4 ${isActive ? 'bg-accent' : ''}`
                 }
               >
-                {remark.title}
+                <div className="flex items-center">
+                  <ReaderIcon className="mr-2 h-4 w-4" />
+                  {remark.title}
+                </div>
               </NavLink>
             </li>
           ))}

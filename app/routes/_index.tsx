@@ -10,15 +10,9 @@ export const meta: MetaFunction = () => {
 };
 export default function Index() {
   return (
-    <div className="leading-5 p-4 h-full">
-      <h1 className="text-xl pb-4">Welcome to Remark!</h1>
-      <div className="flex gap-4 pb-4">
-        <Button variant="default">Default</Button>
-        <Button variant="outline">Outline</Button>
-        <Button variant="secondary">Secondary</Button>
-        <Button variant="ghost">Ghost</Button>
-        <Button variant="destructive">Destructive</Button>
-      </div>
+    <div className="leading-5 p-4 h-full border border-orange-500">
+      <h1 className="text-2xl font-medium pb-4">Welcome to Remark!</h1>
+
       <Link to="users/henghao" className="hover:underline">
         Heng-Hao
       </Link>

@@ -64,6 +64,8 @@ const config = {
         /** 40px size / 48px high / bold */
         h2: ['2.5rem', { lineHeight: '3rem', fontWeight: '700' }],
 
+        /** 24px size / 32px high / normal */
+        'body-lg': ['1.5rem', { lineHeight: '2rem' }],
         /** 20px size / 28px high / normal */
         'body-md': ['1.25rem', { lineHeight: '1.75rem' }],
       },

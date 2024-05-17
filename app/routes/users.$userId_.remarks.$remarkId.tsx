@@ -1,5 +1,7 @@
 import { LoaderFunctionArgs, json } from '@remix-run/node';
-import { useLoaderData, useParams } from '@remix-run/react';
+import { Link, useLoaderData } from '@remix-run/react';
+import { TrashIcon, Pencil1Icon } from '@radix-ui/react-icons';
+import { Button } from '~/ui/shadcn/button';
 import { db } from '~/utils/db.server';
 import { invariantResponse } from '~/utils/misc';
 
@@ -24,9 +26,25 @@ export default function remarkRoute() {
 
   return (
     <div className="p-4 h-full flex flex-col">
-      <h2 className="text-h2 mb-2">{data.remark.title}</h2>
+      <div className="flex">
+        <h2 className="text-2xl font-medium pb-4 pr-4 grow">
+          {data.remark.title}
+        </h2>
+        <div className="flex gap-2">
+          <Button variant="destructive">
+            <TrashIcon className="h-4 w-4" />
+            <div className="hidden lg:block ml-2">Delete</div>
+          </Button>
+          <Button asChild>
+            <Link to="edit">
+              <Pencil1Icon className="h-4 w-4" />
+              <div className="hidden lg:block ml-2">Edit</div>
+            </Link>
+          </Button>
+        </div>
+      </div>
       <div className="overflow-y-auto grow">
-        <p className="text-body-md">{data.remark.content}</p>
+        <p>{data.remark.content}</p>
       </div>
     </div>
   );

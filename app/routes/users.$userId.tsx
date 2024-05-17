@@ -21,8 +21,8 @@ export default function UsersProfileRoute() {
   const data = useLoaderData<typeof loader>();
 
   return (
-    <div className="h-full border border-orange-500 p-4">
-      <h1 className="text-h1 mb-4">
+    <div className="h-full border border-green-500 p-4">
+      <h1 className="text-2xl font-medium mb-4">
         {data.user.name ?? data.user.username}'s Profile
       </h1>
       <Link to="remarks" className="hover:underline">
