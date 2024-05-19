@@ -33,7 +33,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
   });
 }
 
-export default function RemarksRoutes() {
+export default function Remarks() {
   const data = useLoaderData<typeof loader>();
   const ownerDisplayName = data.owner.name ?? data.owner.username;
 

@@ -1,7 +1,72 @@
-export default function RemarkEditRoute() {
+import { EraserIcon, ResetIcon, UpdateIcon } from '@radix-ui/react-icons';
+import { LoaderFunctionArgs, json } from '@remix-run/node';
+import { Form, Link, useLoaderData } from '@remix-run/react';
+import { Button } from '~/ui/shadcn/button';
+import { Input } from '~/ui/shadcn/input';
+import { Label } from '~/ui/shadcn/label';
+import { Textarea } from '~/ui/shadcn/textarea';
+import { db } from '~/utils/db.server';
+import { invariantResponse } from '~/utils/misc';
+
+export async function loader({ params }: LoaderFunctionArgs) {
+  const remark = db.remark.findFirst({
+    where: {
+      id: {
+        equals: params.remarkId,
+      },
+    },
+  });
+
+  invariantResponse(remark, 'Remark not found', { status: 404 });
+
+  return json({
+    remark: { title: remark.title, content: remark.content },
+  });
+}
+
+export default function RemarkEdit() {
+  const data = useLoaderData<typeof loader>();
+
   return (
     <div className="p-4 h-full">
-      <p className="text-2xl font-medium pb-4">Edit remark</p>
+      {/* prevent the full page reload by using the Form component */}
+      <Form method="POST" className="h-full">
+        <div className="h-full flex flex-col gap-6">
+          <div className="grid gap-2">
+            <Label htmlFor="title" className="block">
+              Title
+            </Label>
+            <Input id="title" name="title" defaultValue={data.remark.title} />
+          </div>
+          <div className="flex flex-col gap-2 grow">
+            <Label htmlFor="content">Content</Label>
+            <Textarea
+              id="content"
+              className="grow"
+              name="content"
+              defaultValue={data.remark.content}
+            />
+          </div>
+          <div className="flex justify-between">
+            <Button type="reset" variant="outline">
+              <EraserIcon className="h-4 w-4" />
+              <div className="hidden lg:block ml-2">Reset</div>
+            </Button>
+            <div className="grid grid-cols-2 gap-2">
+              <Button variant="outline" asChild>
+                <Link to=".." relative="path">
+                  <ResetIcon className="h-4 w-4" />
+                  <div className="hidden lg:block ml-2">Cancel</div>
+                </Link>
+              </Button>
+              <Button type="submit">
+                <UpdateIcon className="h-4 w-4" />
+                <div className="hidden lg:block ml-2">Save</div>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Form>
     </div>
   );
 }

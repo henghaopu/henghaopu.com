@@ -21,30 +21,26 @@ export async function loader({ params }: LoaderFunctionArgs) {
   });
 }
 
-export default function remarkRoute() {
+export default function Remark() {
   const data = useLoaderData<typeof loader>();
 
   return (
     <div className="p-4 h-full flex flex-col">
-      <div className="flex">
-        <h2 className="text-2xl font-medium pb-4 pr-4 grow">
-          {data.remark.title}
-        </h2>
-        <div className="flex gap-2">
-          <Button variant="destructive">
-            <TrashIcon className="h-4 w-4" />
-            <div className="hidden lg:block ml-2">Delete</div>
-          </Button>
-          <Button asChild>
-            <Link to="edit">
-              <Pencil1Icon className="h-4 w-4" />
-              <div className="hidden lg:block ml-2">Edit</div>
-            </Link>
-          </Button>
-        </div>
-      </div>
+      <h2 className="text-2xl font-medium pb-4 pr-4">{data.remark.title}</h2>
       <div className="overflow-y-auto grow">
         <p>{data.remark.content}</p>
+      </div>
+      <div className="flex justify-between">
+        <Button variant="destructive">
+          <TrashIcon className="h-4 w-4" />
+          <div className="hidden lg:block ml-2">Delete</div>
+        </Button>
+        <Button asChild>
+          <Link to="edit">
+            <Pencil1Icon className="h-4 w-4" />
+            <div className="hidden lg:block ml-2">Edit</div>
+          </Link>
+        </Button>
       </div>
     </div>
   );

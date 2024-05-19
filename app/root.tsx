@@ -37,6 +37,7 @@ export function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
             <p className="text-3xl font-medium hover:underline">Remark</p>
           </Link>
         </header>
+        {/* children will be the root Component, ErrorBoundary, or HydrateFallback */}
         <div className="container h-full overflow-y-hidden">{children}</div>
         <footer className="container py-2">
           <div className="text-center">

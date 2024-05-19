@@ -1,6 +1,5 @@
 import type { MetaFunction } from '@remix-run/node';
 import { Link } from '@remix-run/react';
-import { Button } from '~/ui/shadcn/button';
 
 export const meta: MetaFunction = () => {
   return [
@@ -8,6 +7,8 @@ export const meta: MetaFunction = () => {
     { name: 'description', content: 'Welcome to Remark' },
   ];
 };
+
+// Index route for the root route. reference: https://remix.run/docs/en/main/start/tutorial#index-routes
 export default function Index() {
   return (
     <div className="leading-5 p-4 h-full border border-orange-500">
