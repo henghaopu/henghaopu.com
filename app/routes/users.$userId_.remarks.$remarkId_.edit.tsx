@@ -13,16 +13,16 @@ export async function action({ request, params }: LoaderFunctionArgs) {
   const title = formData.get('title');
   const content = formData.get('content');
 
+  // We don't simply throw an error because that'll give us a 500 response.
+  // Incorrect form submittion is a 400 response, implying that attempting the same action again will not succeed.
+  // By doing this, we are not allowing flawed code to continue through and wreak havoc.
+  // This is a validation for making sure developers are doing things properly. Not for users.
+  invariantResponse(typeof title === 'string', 'Title must be a string');
+  invariantResponse(typeof content === 'string', 'Content must be a string');
+
   db.remark.update({
-    where: {
-      id: {
-        equals: params.remarkId,
-      },
-    },
-    data: {
-      title: title as string,
-      content: content as string,
-    },
+    where: { id: { equals: params.remarkId } },
+    data: { title, content },
   });
   // Opt to use full path redirection consistently to prevent unexpected behavior caused by relative paths on the web platform
   return redirect(`/users/${params.userId}/remarks/${params.remarkId}`);
