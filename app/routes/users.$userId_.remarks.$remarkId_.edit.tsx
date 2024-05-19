@@ -1,5 +1,5 @@
 import { EraserIcon, ResetIcon, UpdateIcon } from '@radix-ui/react-icons';
-import { LoaderFunctionArgs, json } from '@remix-run/node';
+import { LoaderFunctionArgs, json, redirect } from '@remix-run/node';
 import { Form, Link, useLoaderData } from '@remix-run/react';
 import { Button } from '~/ui/shadcn/button';
 import { Input } from '~/ui/shadcn/input';
@@ -7,6 +7,26 @@ import { Label } from '~/ui/shadcn/label';
 import { Textarea } from '~/ui/shadcn/textarea';
 import { db } from '~/utils/db.server';
 import { invariantResponse } from '~/utils/misc';
+
+export async function action({ request, params }: LoaderFunctionArgs) {
+  const formData = await request.formData();
+  const title = formData.get('title');
+  const content = formData.get('content');
+
+  db.remark.update({
+    where: {
+      id: {
+        equals: params.remarkId,
+      },
+    },
+    data: {
+      title: title as string,
+      content: content as string,
+    },
+  });
+  // Opt to use full path redirection consistently to prevent unexpected behavior caused by relative paths on the web platform
+  return redirect(`/users/${params.userId}/remarks/${params.remarkId}`);
+}
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const remark = db.remark.findFirst({
