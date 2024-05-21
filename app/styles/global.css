@@ -39,7 +39,9 @@
     --radius: 0.5rem;
   }
 
-  .dark {
+  /* Adding dark mode to a remix app: https://ui.shadcn.com/docs/dark-mode/remix */
+  .dark,
+  :root[class~='dark'] {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 
