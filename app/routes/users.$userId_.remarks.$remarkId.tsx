@@ -1,5 +1,10 @@
-import { LoaderFunctionArgs, json } from '@remix-run/node';
-import { Link, useLoaderData } from '@remix-run/react';
+import {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  json,
+  redirect,
+} from '@remix-run/node';
+import { Form, Link, useLoaderData } from '@remix-run/react';
 import { TrashIcon, Pencil1Icon } from '@radix-ui/react-icons';
 import { Button } from '~/ui/shadcn/button';
 import { db } from '~/utils/db.server';
@@ -7,11 +12,7 @@ import { invariantResponse } from '~/utils/misc';
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const remark = db.remark.findFirst({
-    where: {
-      id: {
-        equals: params.remarkId,
-      },
-    },
+    where: { id: { equals: params.remarkId } },
   });
 
   invariantResponse(remark, 'Remark not found', { status: 404 });
@@ -19,6 +20,12 @@ export async function loader({ params }: LoaderFunctionArgs) {
   return json({
     remark: { title: remark.title, content: remark.content },
   });
+}
+
+export async function action({ params }: ActionFunctionArgs) {
+  db.remark.delete({ where: { id: { equals: params.remarkId } } });
+
+  return redirect(`/users/${params.userId}/remarks`);
 }
 
 export default function Remark() {
@@ -31,10 +38,12 @@ export default function Remark() {
         <p>{data.remark.content}</p>
       </div>
       <div className="flex justify-between">
-        <Button variant="destructive">
-          <TrashIcon className="h-4 w-4" />
-          <div className="hidden lg:block ml-2">Delete</div>
-        </Button>
+        <Form method="POST">
+          <Button type="submit" variant="destructive">
+            <TrashIcon className="h-4 w-4" />
+            <div className="hidden lg:block ml-2">Delete</div>
+          </Button>
+        </Form>
         <Button asChild>
           <Link to="edit">
             <Pencil1Icon className="h-4 w-4" />
