@@ -8,6 +8,20 @@ import { Textarea } from '~/ui/shadcn/textarea';
 import { db } from '~/utils/db.server';
 import { invariantResponse } from '~/utils/misc';
 
+export async function loader({ params }: LoaderFunctionArgs) {
+  const remark = db.remark.findFirst({
+    where: {
+      id: { equals: params.remarkId },
+    },
+  });
+
+  invariantResponse(remark, 'Remark not found', { status: 404 });
+
+  return json({
+    remark: { title: remark.title, content: remark.content },
+  });
+}
+
 export async function action({ request, params }: LoaderFunctionArgs) {
   const formData = await request.formData();
   const title = formData.get('title');
@@ -26,22 +40,6 @@ export async function action({ request, params }: LoaderFunctionArgs) {
   });
   // Opt to use full path redirection consistently to prevent unexpected behavior caused by relative paths on the web platform
   return redirect(`/users/${params.userId}/remarks/${params.remarkId}`);
-}
-
-export async function loader({ params }: LoaderFunctionArgs) {
-  const remark = db.remark.findFirst({
-    where: {
-      id: {
-        equals: params.remarkId,
-      },
-    },
-  });
-
-  invariantResponse(remark, 'Remark not found', { status: 404 });
-
-  return json({
-    remark: { title: remark.title, content: remark.content },
-  });
 }
 
 export default function RemarkEdit() {

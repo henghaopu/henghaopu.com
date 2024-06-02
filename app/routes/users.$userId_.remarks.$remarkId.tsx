@@ -22,10 +22,21 @@ export async function loader({ params }: LoaderFunctionArgs) {
   });
 }
 
-export async function action({ params }: ActionFunctionArgs) {
-  db.remark.delete({ where: { id: { equals: params.remarkId } } });
+export async function action({ request, params }: ActionFunctionArgs) {
+  // get the formData from the request
+  const formData = await request.formData();
+  // get the intent from the formData
+  const intent = formData.get('intent');
 
-  return redirect(`/users/${params.userId}/remarks`);
+  switch (intent) {
+    case 'delete': {
+      db.remark.delete({ where: { id: { equals: params.remarkId } } });
+      return redirect(`/users/${params.userId}/remarks`);
+    }
+    default: {
+      throw new Response(`Invalid intent: ${intent}`, { status: 400 });
+    }
+  }
 }
 
 export default function Remark() {
@@ -39,7 +50,12 @@ export default function Remark() {
       </div>
       <div className="flex justify-between">
         <Form method="POST">
-          <Button type="submit" variant="destructive">
+          <Button
+            type="submit"
+            name="intent"
+            value="delete"
+            variant="destructive"
+          >
             <TrashIcon className="h-4 w-4" />
             <div className="hidden lg:block ml-2">Delete</div>
           </Button>
