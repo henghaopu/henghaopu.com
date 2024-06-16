@@ -4,11 +4,12 @@ import {
   json,
   redirect,
 } from '@remix-run/node';
-import { Form, Link, useLoaderData } from '@remix-run/react';
+import { Form, Link, useLoaderData, useLocation } from '@remix-run/react';
 import { TrashIcon, Pencil1Icon } from '@radix-ui/react-icons';
 import { Button } from '~/ui/shadcn/button';
 import { db } from '~/utils/db.server';
 import { invariantResponse } from '~/utils/misc';
+import { useEffect, useRef } from 'react';
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const remark = db.remark.findFirst({
@@ -41,11 +42,20 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 export default function Remark() {
   const data = useLoaderData<typeof loader>();
+  const location = useLocation();
+  const scrollableDivRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // When the location changes, scroll to the top of the scrollable div
+    if (scrollableDivRef.current) {
+      scrollableDivRef.current.scrollTo({ top: 0, behavior: 'instant' });
+    }
+  }, [location]);
 
   return (
     <div className="p-4 h-full flex flex-col">
       <h2 className="text-2xl font-medium pb-4 pr-4">{data.remark.title}</h2>
-      <div className="overflow-y-auto grow">
+      <div className="overflow-y-auto grow" ref={scrollableDivRef}>
         <p>{data.remark.content}</p>
       </div>
       <div className="flex justify-between">

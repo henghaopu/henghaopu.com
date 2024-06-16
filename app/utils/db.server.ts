@@ -80,18 +80,18 @@ export const db = getOrCreateSingleton('db', () => {
     {
       id: 'a946d137',
       title: 'Hello, one more time!(9)',
-      content: 'This is my ninth remark.',
+      content: 'This is my ninth remark. '.repeat(500),
     },
     {
       id: 'a946d138',
       title: 'Hello, one more time!(10)',
-      content: 'This is my tenth remark.',
+      content: 'This is my tenth remark. '.repeat(500),
     },
     // extra long note to test scrolling
     {
       id: 'a946d139',
       title: 'Hello, one more time!(11)',
-      content: 'This is my eleventh remark. '.repeat(100),
+      content: 'This is my eleventh remark. '.repeat(500),
     },
   ];
 
