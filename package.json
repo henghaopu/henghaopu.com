@@ -25,7 +25,8 @@
     "react-dom": "^18.2.0",
     "react-resizable-panels": "^2.0.19",
     "tailwind-merge": "^2.2.2",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@mswjs/data": "^0.16.1",

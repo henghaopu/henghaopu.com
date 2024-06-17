@@ -1,4 +1,4 @@
-import { LinksFunction } from '@remix-run/node';
+import { LinksFunction, json } from '@remix-run/node';
 import {
   Link,
   Links,
@@ -6,11 +6,13 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from '@remix-run/react';
 import faviconAssetUrl from './assets/favicon.svg';
 import logoUrl from './assets/logo.svg';
 import fontStylesheetUrl from './styles/fonts.css?url';
 import globalStylesheetUrl from './styles/global.css?url';
+import { getEnv } from './utils/env.server';
 
 // Reference: https://remix.run/docs/en/main/route/links
 export const links: LinksFunction = () => {
@@ -21,7 +23,13 @@ export const links: LinksFunction = () => {
   ];
 };
 
+export async function loader() {
+  return json({ ENV: getEnv() });
+}
+
 export function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const data = useLoaderData<typeof loader>();
+
   return (
     <html lang="en" className="h-full">
       <head>
@@ -45,6 +53,13 @@ export function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
           </div>
         </footer>
         <ScrollRestoration />
+        {/* add an inline script here using dangerouslySetInnerHTML which
+					sets window.ENV to the JSON.stringified value of data.ENV */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.ENV = ${JSON.stringify(data.ENV)};`,
+          }}
+        />
         <Scripts />
       </body>
     </html>
