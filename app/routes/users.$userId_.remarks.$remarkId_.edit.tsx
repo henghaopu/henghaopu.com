@@ -1,6 +1,12 @@
 import { EraserIcon, ResetIcon, UpdateIcon } from '@radix-ui/react-icons';
 import { LoaderFunctionArgs, json, redirect } from '@remix-run/node';
-import { Form, Link, useLoaderData } from '@remix-run/react';
+import {
+  Form,
+  Link,
+  useLoaderData,
+  useFormAction,
+  useNavigation,
+} from '@remix-run/react';
 import { Button } from '~/ui/shadcn/button';
 import { Input } from '~/ui/shadcn/input';
 import { Label } from '~/ui/shadcn/label';
@@ -44,6 +50,12 @@ export async function action({ request, params }: LoaderFunctionArgs) {
 
 export default function RemarkEdit() {
   const data = useLoaderData<typeof loader>();
+  const formAction = useFormAction();
+  const navigation = useNavigation();
+  const isSavePending =
+    navigation.state !== 'idle' &&
+    navigation.formAction === formAction &&
+    navigation.formMethod === 'POST';
 
   return (
     <div className="p-4 h-full">
@@ -77,8 +89,10 @@ export default function RemarkEdit() {
                   <div className="hidden lg:block ml-2">Cancel</div>
                 </Link>
               </Button>
-              <Button type="submit">
-                <UpdateIcon className="h-4 w-4" />
+              <Button type="submit" disabled={isSavePending}>
+                <UpdateIcon
+                  className={`h-4 w-4 ${isSavePending ? 'animate-spin' : ''}`}
+                />
                 <div className="hidden lg:block ml-2">Save</div>
               </Button>
             </div>
