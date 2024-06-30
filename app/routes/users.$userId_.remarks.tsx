@@ -59,6 +59,7 @@ export default function Remarks() {
             <li key={remark.id} className="list-none">
               <NavLink
                 to={remark.id}
+                prefetch="intent"
                 className={({ isActive }) =>
                   `block hover:underline p-4 ${isActive ? 'bg-accent' : ''}`
                 }

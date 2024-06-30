@@ -25,7 +25,7 @@ export default function UsersProfile() {
       <h1 className="text-2xl font-medium mb-4">
         {data.user.name ?? data.user.username}'s Profile
       </h1>
-      <Link to="remarks" className="hover:underline">
+      <Link to="remarks" prefetch="intent" className="hover:underline">
         Remarks
       </Link>
     </div>
