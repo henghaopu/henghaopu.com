@@ -1,18 +1,12 @@
 import { EraserIcon, ResetIcon, UpdateIcon } from '@radix-ui/react-icons';
 import { LoaderFunctionArgs, json, redirect } from '@remix-run/node';
-import {
-  Form,
-  Link,
-  useLoaderData,
-  useFormAction,
-  useNavigation,
-} from '@remix-run/react';
+import { Form, Link, useLoaderData } from '@remix-run/react';
 import { Button } from '~/ui/shadcn/button';
 import { Input } from '~/ui/shadcn/input';
 import { Label } from '~/ui/shadcn/label';
 import { Textarea } from '~/ui/shadcn/textarea';
 import { db } from '~/utils/db.server';
-import { invariantResponse } from '~/utils/misc';
+import { invariantResponse, useIsSubmitting } from '~/utils/misc';
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const remark = db.remark.findFirst({
@@ -50,12 +44,7 @@ export async function action({ request, params }: LoaderFunctionArgs) {
 
 export default function RemarkEdit() {
   const data = useLoaderData<typeof loader>();
-  const formAction = useFormAction();
-  const navigation = useNavigation();
-  const isSavePending =
-    navigation.state !== 'idle' &&
-    navigation.formAction === formAction &&
-    navigation.formMethod === 'POST';
+  const isSavePending = useIsSubmitting();
 
   return (
     <div className="p-4 h-full">

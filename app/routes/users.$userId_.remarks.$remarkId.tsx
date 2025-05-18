@@ -53,7 +53,7 @@ export default function Remark() {
   }, [location]);
 
   return (
-    <div className="p-4 h-full flex flex-col">
+    <div className="p-4 h-full flex flex-col gap-6">
       <h2 className="text-2xl font-medium pb-4 pr-4">{data.remark.title}</h2>
       <div className="overflow-y-auto grow" ref={scrollableDivRef}>
         <p>{data.remark.content}</p>
