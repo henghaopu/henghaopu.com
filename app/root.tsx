@@ -3,6 +3,7 @@ import {
   Link,
   Links,
   Meta,
+  MetaFunction,
   Outlet,
   Scripts,
   ScrollRestoration,
@@ -13,6 +14,13 @@ import logoUrl from './assets/logo.svg';
 import fontStylesheetUrl from './styles/fonts.css?url';
 import globalStylesheetUrl from './styles/global.css?url';
 import { getEnv } from './utils/env.server';
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: 'Remark' },
+    { name: 'description', content: 'Welcome to Remark' },
+  ];
+};
 
 // Reference: https://remix.run/docs/en/main/route/links
 export const links: LinksFunction = () => {

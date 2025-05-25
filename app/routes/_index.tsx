@@ -1,12 +1,4 @@
-import type { MetaFunction } from '@remix-run/node';
 import { Link } from '@remix-run/react';
-
-export const meta: MetaFunction = () => {
-  return [
-    { title: 'Remark' },
-    { name: 'description', content: 'Welcome to Remark' },
-  ];
-};
 
 // Index route for the root route. reference: https://remix.run/docs/en/main/start/tutorial#index-routes
 export default function Index() {

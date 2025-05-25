@@ -1,7 +1,14 @@
 import { LoaderFunctionArgs, json } from '@remix-run/node';
-import { Link, useLoaderData } from '@remix-run/react';
+import { Link, MetaFunction, useLoaderData } from '@remix-run/react';
 import { db } from '~/utils/db.server';
 import { invariantResponse } from '~/utils/misc';
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: 'Profile | Remark' },
+    { name: 'description', content: 'Check the Profile on Remark' },
+  ];
+};
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const user = db.user.findFirst({
