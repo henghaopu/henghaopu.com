@@ -3,10 +3,12 @@ import { Link, MetaFunction, useLoaderData } from '@remix-run/react';
 import { db } from '~/utils/db.server';
 import { invariantResponse } from '~/utils/misc';
 
-export const meta: MetaFunction = () => {
+export const meta: MetaFunction<typeof loader> = ({ data, params }) => {
+  const displayName = data?.user.name ?? params.userId;
+
   return [
-    { title: 'Profile | Remark' },
-    { name: 'description', content: 'Check the Profile on Remark' },
+    { title: `${displayName}'s Profile | Remark` },
+    { name: 'description', content: `Profile of ${displayName} on Remark` },
   ];
 };
 

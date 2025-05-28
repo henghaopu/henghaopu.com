@@ -1,10 +1,28 @@
 import { ReaderIcon, ResetIcon } from '@radix-ui/react-icons';
 import { LoaderFunctionArgs, json } from '@remix-run/node';
-import { Link, NavLink, Outlet, useLoaderData } from '@remix-run/react';
+import {
+  Link,
+  MetaFunction,
+  NavLink,
+  Outlet,
+  useLoaderData,
+} from '@remix-run/react';
 import { ResizablePanelGroup } from '~/ui/shadcn/resizable';
 import { Separator } from '~/ui/shadcn/separator';
 import { db } from '~/utils/db.server';
 import { invariantResponse } from '~/utils/misc';
+
+export const meta: MetaFunction<typeof loader> = ({ data, params }) => {
+  const displayName = data?.owner.name ?? params.userId;
+
+  return [
+    { title: `${displayName}'s Remarks` },
+    {
+      name: 'description',
+      content: `Checkout ${displayName}'s ${data?.remarks.length ?? 0} remarks`,
+    },
+  ];
+};
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const owner = db.user.findFirst({
