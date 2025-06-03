@@ -1,5 +1,10 @@
 import { LoaderFunctionArgs, json } from '@remix-run/node';
-import { Link, MetaFunction, useLoaderData } from '@remix-run/react';
+import {
+  Link,
+  MetaFunction,
+  useLoaderData,
+  useRouteError,
+} from '@remix-run/react';
 import { db } from '~/utils/db.server';
 import { invariantResponse } from '~/utils/misc';
 
@@ -37,6 +42,17 @@ export default function UsersProfile() {
       <Link to="remarks" prefetch="intent" className="hover:underline">
         Remarks
       </Link>
+    </div>
+  );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+  console.error(error);
+
+  return (
+    <div className="container mx-auto flex h-full w-full items-center justify-center bg-destructive p-20 text-h2 text-destructive-foreground">
+      <div>Oh no, something went wrong while loading the user profile.</div>
     </div>
   );
 }

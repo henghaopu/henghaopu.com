@@ -4,7 +4,7 @@
 import { useFormAction, useNavigation } from '@remix-run/react';
 
 /**
- * Provide a condition and if that condition is falsey, this throws a 400
+ * Provide a condition and if that condition is falsy, this throws a 400
  * Response with the given message. The term "invariant" in programming refers to a condition
  * that is expected to always be true at a certain point in the code or during the execution of a program.
  *
@@ -17,14 +17,14 @@ import { useFormAction, useNavigation } from '@remix-run/react';
  * @param message The message to throw
  * @param responseInit Additional response init options if a response is thrown
  *
- * @throws {Response} if condition is falsey
+ * @throws {Response} if condition is falsy
  */
 export function invariantResponse(
   condition: any,
   message?: string | (() => string),
   responseInit?: ResponseInit,
 ): asserts condition {
-  // Check if the condition is falsey (e.g., condition === false, null, undefined, 0, '', etc.)
+  // Check if the condition is falsy (e.g., condition === false, null, undefined, 0, '', etc.)
   if (!condition) {
     // Throw a new Response with a specified message and status code 400 (Bad Request)
     throw new Response(
