@@ -7,6 +7,7 @@ import {
   Outlet,
   useLoaderData,
 } from '@remix-run/react';
+import { GeneralErrorBoundary } from '~/ui/error-boundary';
 import { ResizablePanelGroup } from '~/ui/shadcn/resizable';
 import { Separator } from '~/ui/shadcn/separator';
 import { db } from '~/utils/db.server';
@@ -96,5 +97,17 @@ export default function Remarks() {
         <Outlet />
       </div>
     </ResizablePanelGroup>
+  );
+}
+
+export function ErrorBoundary() {
+  return (
+    <GeneralErrorBoundary
+      statusHandlers={{
+        404: ({ params }) => (
+          <p>{`User with userId ${params.userId} doesn't exist.`}</p>
+        ),
+      }}
+    />
   );
 }

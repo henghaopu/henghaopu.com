@@ -1,12 +1,6 @@
 import { LoaderFunctionArgs, json } from '@remix-run/node';
-import {
-  isRouteErrorResponse,
-  Link,
-  MetaFunction,
-  useLoaderData,
-  useParams,
-  useRouteError,
-} from '@remix-run/react';
+import { Link, MetaFunction, useLoaderData } from '@remix-run/react';
+import { GeneralErrorBoundary } from '~/ui/error-boundary';
 import { db } from '~/utils/db.server';
 import { invariantResponse } from '~/utils/misc';
 
@@ -49,22 +43,15 @@ export default function UsersProfile() {
 }
 
 export function ErrorBoundary() {
-  const error = useRouteError();
-  // Access the userId that caused the error
-  const params = useParams();
-  console.error(error);
-
-  let errorMessage =
-    'Oh no, something went wrong while loading the user profile.';
-
-  // Customize the error message based on the error type or status code
-  if (isRouteErrorResponse(error) && error.status === 404) {
-    errorMessage = `User with userId "${params.userId}" not found.`;
-  }
-
   return (
-    <div className="container mx-auto flex h-full w-full items-center justify-center bg-destructive p-20 text-h2 text-destructive-foreground">
-      <div>{errorMessage}</div>
-    </div>
+    <GeneralErrorBoundary
+      statusHandlers={{
+        404: ({ params }) => (
+          <p className="text-red-500">
+            {`User with userId ${params.userId} doesn't exist.`}
+          </p>
+        ),
+      }}
+    />
   );
 }

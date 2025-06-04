@@ -1,6 +1,7 @@
 import { EraserIcon, ResetIcon, UpdateIcon } from '@radix-ui/react-icons';
 import { LoaderFunctionArgs, json, redirect } from '@remix-run/node';
 import { Form, Link, useLoaderData } from '@remix-run/react';
+import { GeneralErrorBoundary } from '~/ui/error-boundary';
 import { Button } from '~/ui/shadcn/button';
 import { Input } from '~/ui/shadcn/input';
 import { Label } from '~/ui/shadcn/label';
@@ -89,5 +90,17 @@ export default function RemarkEdit() {
         </div>
       </Form>
     </div>
+  );
+}
+
+export function ErrorBoundary() {
+  return (
+    <GeneralErrorBoundary
+      statusHandlers={{
+        404: ({ params }) => (
+          <p>{`Remark with remarkId ${params.remarkId} doesn't exist.`}</p>
+        ),
+      }}
+    />
   );
 }

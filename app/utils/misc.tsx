@@ -64,3 +64,26 @@ export function useIsSubmitting({
     navigation.formAction === (formAction ?? contextualFormAction)
   );
 }
+
+/**
+ * Extracts the error message from an error object or string.
+ * This function handles different types of errors:
+ * If the error is a string, it returns the string directly.
+ * If the error is an object with a 'message' property, it returns that message.
+ * If the error is of an unknown type, it logs the error to the console and returns 'Unknown Error'.
+ * @param error - The error object to extract the message from.
+ * @returns The error message as a string.
+ */
+export function getErrorMessage(error: unknown) {
+  if (typeof error === 'string') return error;
+  if (
+    error &&
+    typeof error === 'object' &&
+    'message' in error &&
+    typeof error.message === 'string'
+  ) {
+    return error.message;
+  }
+  console.error('Unable to get error message for error:', error);
+  return 'Unknown Error';
+}

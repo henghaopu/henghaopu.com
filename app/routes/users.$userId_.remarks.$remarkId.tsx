@@ -10,6 +10,7 @@ import { Button } from '~/ui/shadcn/button';
 import { db } from '~/utils/db.server';
 import { invariantResponse } from '~/utils/misc';
 import { useEffect, useRef } from 'react';
+import { GeneralErrorBoundary } from '~/ui/error-boundary';
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const remark = db.remark.findFirst({
@@ -78,5 +79,17 @@ export default function Remark() {
         </Button>
       </div>
     </div>
+  );
+}
+
+export function ErrorBoundary() {
+  return (
+    <GeneralErrorBoundary
+      statusHandlers={{
+        404: ({ params }) => (
+          <p>{`Remark with id ${params.remarkId} doesn't exist.`}</p>
+        ),
+      }}
+    />
   );
 }
