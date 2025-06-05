@@ -7,13 +7,14 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useLoaderData,
+  useRouteLoaderData,
 } from '@remix-run/react';
 import faviconAssetUrl from './assets/favicon.svg';
 import logoUrl from './assets/logo.svg';
 import fontStylesheetUrl from './styles/fonts.css?url';
 import globalStylesheetUrl from './styles/global.css?url';
 import { getEnv } from './utils/env.server';
+import { GeneralErrorBoundary } from './ui/error-boundary';
 
 export const meta: MetaFunction = () => {
   return [
@@ -36,7 +37,8 @@ export async function loader() {
 }
 
 export function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const data = useLoaderData<typeof loader>();
+  // Reference: https://remix.run/docs/en/main/file-conventions/root
+  const data = useRouteLoaderData('root');
 
   return (
     <html lang="en" className="h-full">
@@ -63,11 +65,13 @@ export function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
         <ScrollRestoration />
         {/* add an inline script here using dangerouslySetInnerHTML which
 					sets window.ENV to the JSON.stringified value of data.ENV */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `window.ENV = ${JSON.stringify(data.ENV)};`,
-          }}
-        />
+        {data ? (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `window.ENV = ${JSON.stringify(data.ENV)};`,
+            }}
+          />
+        ) : null}
         <Scripts />
       </body>
     </html>
@@ -76,4 +80,8 @@ export function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
 
 export default function App() {
   return <Outlet />;
+}
+
+export function ErrorBoundary() {
+  return <GeneralErrorBoundary />;
 }
