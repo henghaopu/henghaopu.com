@@ -16,6 +16,10 @@ import globalStylesheetUrl from './styles/global.css?url';
 import { getEnv } from './utils/env.server';
 import { GeneralErrorBoundary } from './ui/error-boundary';
 
+type LoaderData = {
+  ENV: ReturnType<typeof getEnv>;
+};
+
 export const meta: MetaFunction = () => {
   return [
     { title: 'Remark' },
@@ -33,12 +37,12 @@ export const links: LinksFunction = () => {
 };
 
 export async function loader() {
-  return json({ ENV: getEnv() });
+  return json<LoaderData>({ ENV: getEnv() });
 }
 
 export function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
   // Reference: https://remix.run/docs/en/main/file-conventions/root
-  const data = useRouteLoaderData('root');
+  const data = useRouteLoaderData<LoaderData>('root');
 
   return (
     <html lang="en" className="h-full">
