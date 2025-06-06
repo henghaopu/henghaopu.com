@@ -13,6 +13,7 @@ import faviconAssetUrl from './assets/favicon.svg';
 import logoUrl from './assets/logo.svg';
 import fontStylesheetUrl from './styles/fonts.css?url';
 import globalStylesheetUrl from './styles/global.css?url';
+import { createMeta } from './utils/meta';
 import { getEnv } from './utils/env.server';
 import { GeneralErrorBoundary } from './ui/error-boundary';
 
@@ -20,12 +21,14 @@ type LoaderData = {
   ENV: ReturnType<typeof getEnv>;
 };
 
-export const meta: MetaFunction = () => {
+const routeMeta: MetaFunction = () => {
   return [
     { title: 'Remark' },
     { name: 'description', content: 'Welcome to Remark' },
   ];
 };
+
+export const meta = createMeta(routeMeta);
 
 // Reference: https://remix.run/docs/en/main/route/links
 export const links: LinksFunction = () => {
@@ -47,8 +50,6 @@ export function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className="h-full">
       <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
       </head>

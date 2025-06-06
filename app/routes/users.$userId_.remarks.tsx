@@ -10,12 +10,12 @@ import {
 import { GeneralErrorBoundary } from '~/ui/error-boundary';
 import { ResizablePanelGroup } from '~/ui/shadcn/resizable';
 import { Separator } from '~/ui/shadcn/separator';
+import { createMeta } from '~/utils/meta';
 import { db } from '~/utils/db.server';
 import { invariantResponse } from '~/utils/misc';
 
-export const meta: MetaFunction<typeof loader> = ({ data, params }) => {
+const routeMeta: MetaFunction<typeof loader> = ({ data, params }) => {
   const displayName = data?.owner.name ?? params.userId;
-
   return [
     { title: `${displayName}'s Remarks` },
     {
@@ -24,6 +24,8 @@ export const meta: MetaFunction<typeof loader> = ({ data, params }) => {
     },
   ];
 };
+
+export const meta = createMeta(routeMeta);
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const owner = db.user.findFirst({

@@ -1,10 +1,11 @@
 import { LoaderFunctionArgs, json } from '@remix-run/node';
 import { Link, MetaFunction, useLoaderData } from '@remix-run/react';
 import { GeneralErrorBoundary } from '~/ui/error-boundary';
+import { createMeta } from '~/utils/meta';
 import { db } from '~/utils/db.server';
 import { invariantResponse } from '~/utils/misc';
 
-export const meta: MetaFunction<typeof loader> = ({ data, params }) => {
+const routeMeta: MetaFunction<typeof loader> = ({ data, params }) => {
   const displayName = data?.user.name ?? params.userId;
 
   return [
@@ -12,6 +13,8 @@ export const meta: MetaFunction<typeof loader> = ({ data, params }) => {
     { name: 'description', content: `Profile of ${displayName} on Remark` },
   ];
 };
+
+export const meta = createMeta(routeMeta);
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const user = db.user.findFirst({
