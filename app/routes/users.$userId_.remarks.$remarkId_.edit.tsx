@@ -1,6 +1,7 @@
 import { EraserIcon, ResetIcon, UpdateIcon } from '@radix-ui/react-icons';
 import { LoaderFunctionArgs, json, redirect } from '@remix-run/node';
 import { Form, Link, useActionData, useLoaderData } from '@remix-run/react';
+import { useEffect, useState } from 'react';
 import { GeneralErrorBoundary } from '~/ui/error-boundary';
 import { Button } from '~/ui/shadcn/button';
 import { Input } from '~/ui/shadcn/input';
@@ -106,10 +107,17 @@ function ErrorList({ errors }: { errors?: Array<string> | null }) {
   ) : null;
 }
 
+function useIsHydrated() {
+  const [isHydrated, setIsHydrated] = useState(false);
+  useEffect(() => setIsHydrated(true), []);
+  return isHydrated;
+}
+
 export default function RemarkEdit() {
   const data = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const isSavePending = useIsSubmitting();
+  const isHydrated = useIsHydrated();
 
   const fieldErrors =
     actionData?.type === 'error' ? actionData.errors.fieldErrors : undefined;
@@ -119,7 +127,7 @@ export default function RemarkEdit() {
   return (
     <div className="p-4 h-full">
       {/* prevent the full page reload by using the Form component */}
-      <Form method="POST" className="h-full" noValidate>
+      <Form method="POST" className="h-full" noValidate={isHydrated}>
         <div className="h-full flex flex-col gap-6">
           <div className="grid gap-2">
             <Label htmlFor="title" className="block">
