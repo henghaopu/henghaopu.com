@@ -1,6 +1,6 @@
 import { EraserIcon, ResetIcon, UpdateIcon } from '@radix-ui/react-icons';
 import { LoaderFunctionArgs, json, redirect } from '@remix-run/node';
-import { Form, Link, useLoaderData } from '@remix-run/react';
+import { Form, Link, useActionData, useLoaderData } from '@remix-run/react';
 import { GeneralErrorBoundary } from '~/ui/error-boundary';
 import { Button } from '~/ui/shadcn/button';
 import { Input } from '~/ui/shadcn/input';
@@ -23,6 +23,17 @@ export async function loader({ params }: LoaderFunctionArgs) {
   });
 }
 
+type ActionErrors = {
+  formErrors: string[];
+  fieldErrors: {
+    title: string[];
+    content: string[];
+  };
+};
+
+const titleMaxLength = 80;
+const contentMaxLength = 10000;
+
 export async function action({ request, params }: LoaderFunctionArgs) {
   const formData = await request.formData();
   const title = formData.get('title');
@@ -35,6 +46,46 @@ export async function action({ request, params }: LoaderFunctionArgs) {
   invariantResponse(typeof title === 'string', 'Title must be a string');
   invariantResponse(typeof content === 'string', 'Content must be a string');
 
+  const errors: ActionErrors = {
+    formErrors: [],
+    fieldErrors: {
+      title: [],
+      content: [],
+    },
+  };
+
+  if (title === '') {
+    errors.fieldErrors.title.push('Title is required');
+  }
+  if (title.length < 1) {
+    errors.fieldErrors.title.push('Title must be at least 1 character');
+  }
+  if (title.length > titleMaxLength) {
+    errors.fieldErrors.title.push(
+      `Title must be less than ${titleMaxLength} characters`,
+    );
+  }
+  if (content === '') {
+    errors.fieldErrors.content.push('Content is required');
+  }
+  if (content.length > contentMaxLength) {
+    errors.fieldErrors.content.push(
+      `Content must be less than ${contentMaxLength} characters`,
+    );
+  }
+  if (title.includes('script') || content.includes('script')) {
+    errors.formErrors.push('Script tags are not allowed for security reasons');
+  }
+
+  const hasErrors =
+    errors.formErrors.length ||
+    Object.values(errors.fieldErrors).some(errors => errors.length);
+
+  if (hasErrors) {
+    // clearly state that the return type of the action is an error
+    return json({ type: 'error', errors } as const, { status: 400 });
+  }
+
   db.remark.update({
     where: { id: { equals: params.remarkId } },
     data: { title, content },
@@ -43,14 +94,32 @@ export async function action({ request, params }: LoaderFunctionArgs) {
   return redirect(`/users/${params.userId}/remarks/${params.remarkId}`);
 }
 
+function ErrorList({ errors }: { errors?: Array<string> | null }) {
+  return errors?.length ? (
+    <ul className="flex flex-col gap-1">
+      {errors.map((error, i) => (
+        <li key={i} className="text-[10px] text-foreground-destructive">
+          {error}
+        </li>
+      ))}
+    </ul>
+  ) : null;
+}
+
 export default function RemarkEdit() {
   const data = useLoaderData<typeof loader>();
+  const actionData = useActionData<typeof action>();
   const isSavePending = useIsSubmitting();
+
+  const fieldErrors =
+    actionData?.type === 'error' ? actionData.errors.fieldErrors : undefined;
+  const formErrors =
+    actionData?.type === 'error' ? actionData.errors.formErrors : undefined;
 
   return (
     <div className="p-4 h-full">
       {/* prevent the full page reload by using the Form component */}
-      <Form method="POST" className="h-full">
+      <Form method="POST" className="h-full" noValidate>
         <div className="h-full flex flex-col gap-6">
           <div className="grid gap-2">
             <Label htmlFor="title" className="block">
@@ -61,8 +130,11 @@ export default function RemarkEdit() {
               name="title"
               defaultValue={data.remark.title}
               required
-              maxLength={80}
+              maxLength={titleMaxLength}
             />
+            <div className="min-h-[32px] px-4 pb-3 pt-1">
+              <ErrorList errors={fieldErrors?.title} />
+            </div>
           </div>
           <div className="flex flex-col gap-2 grow">
             <Label htmlFor="content">Content</Label>
@@ -72,9 +144,15 @@ export default function RemarkEdit() {
               name="content"
               defaultValue={data.remark.content}
               required
-              maxLength={10000}
+              maxLength={contentMaxLength}
             />
+            <div className="min-h-[32px] px-4 pb-3 pt-1">
+              <ErrorList errors={fieldErrors?.content} />
+            </div>
           </div>
+
+          <ErrorList errors={formErrors} />
+
           <div className="flex justify-between">
             <Button type="reset" variant="outline">
               <EraserIcon className="h-4 w-4" />

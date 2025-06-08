@@ -8,6 +8,8 @@
 /* Shadcn */
 @layer base {
   :root {
+    --foreground-destructive: 345 82.7% 40.8%;
+
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
 
@@ -42,6 +44,8 @@
   /* Adding dark mode to a remix app: https://ui.shadcn.com/docs/dark-mode/remix */
   .dark,
   :root[class~='dark'] {
+    --foreground-destructive: -4 84% 60%;
+
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 
