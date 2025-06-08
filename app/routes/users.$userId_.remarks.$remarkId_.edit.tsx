@@ -56,7 +56,13 @@ export default function RemarkEdit() {
             <Label htmlFor="title" className="block">
               Title
             </Label>
-            <Input id="title" name="title" defaultValue={data.remark.title} />
+            <Input
+              id="title"
+              name="title"
+              defaultValue={data.remark.title}
+              required
+              maxLength={80}
+            />
           </div>
           <div className="flex flex-col gap-2 grow">
             <Label htmlFor="content">Content</Label>
@@ -65,6 +71,8 @@ export default function RemarkEdit() {
               className="grow"
               name="content"
               defaultValue={data.remark.content}
+              required
+              maxLength={10000}
             />
           </div>
           <div className="flex justify-between">
