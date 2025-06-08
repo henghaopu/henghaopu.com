@@ -1,7 +1,7 @@
 import { EraserIcon, ResetIcon, UpdateIcon } from '@radix-ui/react-icons';
 import { LoaderFunctionArgs, json, redirect } from '@remix-run/node';
 import { Form, Link, useActionData, useLoaderData } from '@remix-run/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { GeneralErrorBoundary } from '~/ui/error-boundary';
 import { Button } from '~/ui/shadcn/button';
 import { Input } from '~/ui/shadcn/input';
@@ -118,6 +118,7 @@ export default function RemarkEdit() {
   const actionData = useActionData<typeof action>();
   const isSavePending = useIsSubmitting();
   const isHydrated = useIsHydrated();
+  const editFormId = useId();
 
   const fieldErrors =
     actionData?.type === 'error' ? actionData.errors.fieldErrors : undefined;
@@ -127,14 +128,19 @@ export default function RemarkEdit() {
   return (
     <div className="p-4 h-full">
       {/* prevent the full page reload by using the Form component */}
-      <Form method="POST" className="h-full" noValidate={isHydrated}>
+      <Form
+        method="POST"
+        className="h-full"
+        noValidate={isHydrated}
+        id={editFormId}
+      >
         <div className="h-full flex flex-col gap-6">
           <div className="grid gap-2">
-            <Label htmlFor="title" className="block">
+            <Label htmlFor={`${editFormId}-title`} className="block">
               Title
             </Label>
             <Input
-              id="title"
+              id={`${editFormId}-title`}
               name="title"
               defaultValue={data.remark.title}
               required
@@ -145,9 +151,9 @@ export default function RemarkEdit() {
             </div>
           </div>
           <div className="flex flex-col gap-2 grow">
-            <Label htmlFor="content">Content</Label>
+            <Label htmlFor={`${editFormId}-content`}>Content</Label>
             <Textarea
-              id="content"
+              id={`${editFormId}-content`}
               className="grow"
               name="content"
               defaultValue={data.remark.content}
@@ -162,18 +168,18 @@ export default function RemarkEdit() {
           <ErrorList errors={formErrors} />
 
           <div className="flex justify-between">
-            <Button type="reset" variant="outline">
+            <Button type="reset" variant="outline" form={editFormId}>
               <EraserIcon className="h-4 w-4" />
               <div className="hidden lg:block ml-2">Reset</div>
             </Button>
             <div className="grid grid-cols-2 gap-2">
-              <Button variant="outline" asChild>
+              <Button variant="outline" asChild form={editFormId}>
                 <Link to=".." relative="path">
                   <ResetIcon className="h-4 w-4" />
                   <div className="hidden lg:block ml-2">Cancel</div>
                 </Link>
               </Button>
-              <Button type="submit" disabled={isSavePending}>
+              <Button type="submit" disabled={isSavePending} form={editFormId}>
                 <UpdateIcon
                   className={`h-4 w-4 ${isSavePending ? 'animate-spin' : ''}`}
                 />
