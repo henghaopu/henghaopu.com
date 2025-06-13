@@ -1,7 +1,8 @@
+/* eslint-disable jsx-a11y/no-autofocus */
 import { EraserIcon, ResetIcon, UpdateIcon } from '@radix-ui/react-icons';
 import { LoaderFunctionArgs, json, redirect } from '@remix-run/node';
 import { Form, Link, useActionData, useLoaderData } from '@remix-run/react';
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { GeneralErrorBoundary } from '~/ui/error-boundary';
 import { Button } from '~/ui/shadcn/button';
 import { Input } from '~/ui/shadcn/input';
@@ -74,7 +75,7 @@ export async function action({ request, params }: LoaderFunctionArgs) {
       `Content must be less than ${contentMaxLength} characters`,
     );
   }
-  if (title.includes('script') || content.includes('script')) {
+  if (title.includes('<script>') || content.includes('<script>')) {
     errors.formErrors.push('Script tags are not allowed for security reasons');
   }
 
@@ -122,6 +123,7 @@ function useIsHydrated() {
 export default function RemarkEdit() {
   const data = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
+  const editFormRef = useRef<HTMLFormElement>(null);
   const isSavePending = useIsSubmitting();
   const isHydrated = useIsHydrated();
   const editFormId = useId();
@@ -141,16 +143,40 @@ export default function RemarkEdit() {
     ? `${editFormId}-content-errors`
     : undefined;
 
+  // Focus on the first element in the form that has an error whenever the actionData changes
+  useEffect(() => {
+    const formElement = editFormRef.current;
+    if (!formElement) return; // in case early return with no form element being added
+    if (actionData?.type !== 'error') return;
+
+    // if the formRef.current matches the query [aria-invalid="true"], then focus on the form
+    if (formElement.matches('[aria-invalid="true"]')) {
+      formElement.focus();
+    } else {
+      // run formRef.current.querySelector to find the first [aria-invalid="true"] HTMLElement and focus that one instead.
+      const firstInvalidElement = formElement.querySelector(
+        '[aria-invalid="true"]',
+      );
+      // If firstInvalidElement is null, calling .focus() would throw an runtime error.
+      if (firstInvalidElement instanceof HTMLElement) {
+        // Ensure the element exists (is not null) and is an HTMLElement that can be focused
+        firstInvalidElement.focus();
+      }
+    }
+  }, [actionData]);
+
   return (
     <div className="p-4 h-full">
       {/* prevent the full page reload by using the Form component */}
       <Form
+        ref={editFormRef}
         method="POST"
         className="h-full"
         noValidate={isHydrated}
         id={editFormId}
         aria-invalid={hasFormErrors}
         aria-describedby={formErrorId}
+        tabIndex={-1} // allow programmatically focus on the form
       >
         <div className="h-full flex flex-col gap-6">
           <div className="grid gap-2">
@@ -165,6 +191,7 @@ export default function RemarkEdit() {
               maxLength={titleMaxLength}
               aria-invalid={hasTitleErrors || undefined} // Only present when true (avoid using false for the border color red)
               aria-describedby={titleErrorId}
+              autoFocus
             />
             <div className="min-h-[32px] px-4 pb-3 pt-1">
               <ErrorList id={titleErrorId} errors={fieldErrors?.title} />
