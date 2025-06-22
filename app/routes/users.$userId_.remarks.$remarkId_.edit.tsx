@@ -3,6 +3,7 @@ import { EraserIcon, ResetIcon, UpdateIcon } from '@radix-ui/react-icons';
 import { LoaderFunctionArgs, json, redirect } from '@remix-run/node';
 import { Form, Link, useActionData, useLoaderData } from '@remix-run/react';
 import { useEffect, useId, useRef, useState } from 'react';
+import * as z from 'zod/v4';
 import { GeneralErrorBoundary } from '~/ui/error-boundary';
 import { Button } from '~/ui/shadcn/button';
 import { Input } from '~/ui/shadcn/input';
@@ -29,68 +30,33 @@ export async function loader({ params }: LoaderFunctionArgs) {
   });
 }
 
-type ActionErrors = {
-  formErrors: string[];
-  fieldErrors: {
-    title: string[];
-    content: string[];
-  };
-};
-
 const titleMaxLength = 80;
 const contentMaxLength = 10000;
 
+const RemarkEditorSchema = z.object({
+  title: z.string().min(1).max(titleMaxLength),
+  content: z.string().min(1).max(contentMaxLength),
+});
+
 export async function action({ request, params }: LoaderFunctionArgs) {
   const formData = await request.formData();
-  const title = formData.get('title');
-  const content = formData.get('content');
 
-  // We don't simply throw an error because that'll give us a 500 response.
-  // Incorrect form submittion is a 400 response, implying that attempting the same action again will not succeed.
-  // By doing this, we are not allowing flawed code to continue through and wreak havoc.
-  // This is a validation for making sure developers are doing things properly. Not for users.
-  invariantResponse(typeof title === 'string', 'Title must be a string');
-  invariantResponse(typeof content === 'string', 'Content must be a string');
+  const result = RemarkEditorSchema.safeParse({
+    title: formData.get('title'),
+    content: formData.get('content'),
+  });
 
-  const errors: ActionErrors = {
-    formErrors: [],
-    fieldErrors: {
-      title: [],
-      content: [],
-    },
-  };
-
-  if (title === '') {
-    errors.fieldErrors.title.push('Title is required');
-  }
-  if (title.length < 1) {
-    errors.fieldErrors.title.push('Title must be at least 1 character');
-  }
-  if (title.length > titleMaxLength) {
-    errors.fieldErrors.title.push(
-      `Title must be less than ${titleMaxLength} characters`,
-    );
-  }
-  if (content === '') {
-    errors.fieldErrors.content.push('Content is required');
-  }
-  if (content.length > contentMaxLength) {
-    errors.fieldErrors.content.push(
-      `Content must be less than ${contentMaxLength} characters`,
-    );
-  }
-  if (title.includes('<script>') || content.includes('<script>')) {
-    errors.formErrors.push('Script tags are not allowed for security reasons');
-  }
-
-  const hasErrors =
-    errors.formErrors.length ||
-    Object.values(errors.fieldErrors).some(errors => errors.length);
-
-  if (hasErrors) {
+  if (!result.success) {
     // clearly state that the return type of the action is an error
-    return json({ type: 'error', errors } as const, { status: 400 });
+    return json(
+      { type: 'error', errors: z.flattenError(result.error) } as const,
+      {
+        status: 400,
+      },
+    );
   }
+
+  const { title, content } = result.data;
 
   db.remark.update({
     where: { id: { equals: params.remarkId } },
