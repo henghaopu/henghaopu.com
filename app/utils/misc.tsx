@@ -1,6 +1,7 @@
 // assertCondition / checkInvariant
 // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html#assertion-functions
 
+import { useEffect } from 'react';
 import { useFormAction, useNavigation } from '@remix-run/react';
 
 /**
@@ -86,4 +87,35 @@ export function getErrorMessage(error: unknown) {
   }
   console.error('Unable to get error message for error:', error);
   return 'Unknown Error';
+}
+
+/**
+ * Focus on the first invalid element in the form when the form is submitted.
+ *
+ * @param formElement The form element to focus on.
+ * @param hasErrors Whether the form has errors.
+ */
+export function useFocusInvalid(
+  formElement: HTMLFormElement | null,
+  hasErrors: boolean,
+) {
+  useEffect(() => {
+    if (!formElement) return; // in case early return with no form element being added
+    if (!hasErrors) return;
+
+    // if the formRef.current matches the query [aria-invalid="true"], then focus on the form
+    if (formElement.matches('[aria-invalid="true"]')) {
+      formElement.focus();
+    } else {
+      // run formRef.current.querySelector to find the first [aria-invalid="true"] HTMLElement and focus that one instead.
+      const firstInvalidElement = formElement.querySelector(
+        '[aria-invalid="true"]',
+      );
+      // If firstInvalidElement is null, calling .focus() would throw an runtime error.
+      if (firstInvalidElement instanceof HTMLElement) {
+        // Ensure the element exists (is not null) and is an HTMLElement that can be focused
+        firstInvalidElement.focus();
+      }
+    }
+  }, [formElement, hasErrors]);
 }
