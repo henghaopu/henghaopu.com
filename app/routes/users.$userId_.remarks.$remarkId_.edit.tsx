@@ -4,6 +4,7 @@ import { LoaderFunctionArgs, json, redirect } from '@remix-run/node';
 import { Form, Link, useActionData, useLoaderData } from '@remix-run/react';
 import { useEffect, useId, useRef, useState } from 'react';
 import * as z from 'zod/v4';
+import { parseWithZod } from '@conform-to/zod/v4';
 import { GeneralErrorBoundary } from '~/ui/error-boundary';
 import { Button } from '~/ui/shadcn/button';
 import { Input } from '~/ui/shadcn/input';
@@ -33,30 +34,34 @@ export async function loader({ params }: LoaderFunctionArgs) {
 const titleMaxLength = 80;
 const contentMaxLength = 10000;
 
-const RemarkEditorSchema = z.object({
-  title: z.string().min(1).max(titleMaxLength),
-  content: z.string().min(1).max(contentMaxLength),
-});
+const RemarkEditorSchema = z
+  .object({
+    title: z.string().min(1).max(titleMaxLength),
+    content: z.string().min(1).max(contentMaxLength),
+  })
+  // .check() doesn’t run if fields fail.
+  .check(ctx => {
+    const { title, content } = ctx.value;
+    if (title.includes('<script>') || content.includes('<script>')) {
+      ctx.issues.push({
+        code: 'custom',
+        message: "Your input contains disallowed '<script>' tag",
+        path: [], // empty path = form-level error
+        input: ctx.value,
+      });
+    }
+  });
 
 export async function action({ request, params }: LoaderFunctionArgs) {
   const formData = await request.formData();
 
-  const result = RemarkEditorSchema.safeParse({
-    title: formData.get('title'),
-    content: formData.get('content'),
-  });
+  const submission = parseWithZod(formData, { schema: RemarkEditorSchema });
 
-  if (!result.success) {
-    // clearly state that the return type of the action is an error
-    return json(
-      { type: 'error', errors: z.flattenError(result.error) } as const,
-      {
-        status: 400,
-      },
-    );
+  if (submission.status !== 'success') {
+    return submission.reply();
   }
 
-  const { title, content } = result.data;
+  const { title, content } = submission.value; // now safely accessed
 
   db.remark.update({
     where: { id: { equals: params.remarkId } },
@@ -99,9 +104,9 @@ export default function RemarkEdit() {
   const editFormId = useId();
 
   const fieldErrors =
-    actionData?.type === 'error' ? actionData.errors.fieldErrors : undefined;
+    actionData?.status === 'error' ? actionData.error : undefined;
   const formErrors =
-    actionData?.type === 'error' ? actionData.errors.formErrors : undefined;
+    actionData?.status === 'error' ? actionData.error?.[''] : undefined;
   const hasFormErrors = Boolean(formErrors?.length);
   const hasTitleErrors = Boolean(fieldErrors?.title?.length);
   const hasContentErrors = Boolean(fieldErrors?.content?.length);
@@ -116,7 +121,7 @@ export default function RemarkEdit() {
   // Focus on the first element in the form that has an error whenever the actionData changes
   useFocusInvalid(
     editFormRef.current,
-    actionData?.type === 'error' && !isSavePending,
+    actionData?.status === 'error' && !isSavePending,
   );
 
   return (
