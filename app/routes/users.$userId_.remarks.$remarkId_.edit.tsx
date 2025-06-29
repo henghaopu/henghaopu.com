@@ -2,9 +2,15 @@
 import { EraserIcon, ResetIcon, UpdateIcon } from '@radix-ui/react-icons';
 import { LoaderFunctionArgs, json, redirect } from '@remix-run/node';
 import { Form, Link, useActionData, useLoaderData } from '@remix-run/react';
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as z from 'zod/v4';
-import { parseWithZod } from '@conform-to/zod/v4';
+import { parseWithZod, getZodConstraint } from '@conform-to/zod/v4';
+import {
+  useForm,
+  getInputProps,
+  getTextareaProps,
+  getFormProps,
+} from '@conform-to/react';
 import { GeneralErrorBoundary } from '~/ui/error-boundary';
 import { Button } from '~/ui/shadcn/button';
 import { Input } from '~/ui/shadcn/input';
@@ -13,7 +19,7 @@ import { Textarea } from '~/ui/shadcn/textarea';
 import { db } from '~/utils/db.server';
 import {
   invariantResponse,
-  useFocusInvalid,
+  useFocusOnFormError,
   useIsSubmitting,
 } from '~/utils/misc';
 
@@ -36,10 +42,10 @@ const contentMaxLength = 10000;
 
 const RemarkEditorSchema = z
   .object({
-    title: z.string().min(1).max(titleMaxLength),
-    content: z.string().min(1).max(contentMaxLength),
+    title: z.string().max(titleMaxLength),
+    content: z.string().max(contentMaxLength),
   })
-  // .check() doesn’t run if fields fail.
+  // .check() doesn't run if fields fail.
   .check(ctx => {
     const { title, content } = ctx.value;
     if (title.includes('<script>') || content.includes('<script>')) {
@@ -58,7 +64,7 @@ export async function action({ request, params }: LoaderFunctionArgs) {
   const submission = parseWithZod(formData, { schema: RemarkEditorSchema });
 
   if (submission.status !== 'success') {
-    return submission.reply();
+    return json(submission.reply(), { status: 400 });
   }
 
   const { title, content } = submission.value; // now safely accessed
@@ -98,96 +104,80 @@ function useIsHydrated() {
 export default function RemarkEdit() {
   const data = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
+  const [form, fields] = useForm({
+    id: 'edit-remark-form',
+    constraint: getZodConstraint(RemarkEditorSchema),
+    // Sync the result of last submission
+    lastResult: actionData,
+    // Reuse the validation logic on the client side
+    onValidate({ formData }) {
+      return parseWithZod(formData, { schema: RemarkEditorSchema });
+    },
+    // Use the loader data to prefill the form
+    defaultValue: {
+      title: data.remark.title,
+      content: data.remark.content,
+    },
+  });
   const editFormRef = useRef<HTMLFormElement>(null);
   const isSavePending = useIsSubmitting();
   const isHydrated = useIsHydrated();
-  const editFormId = useId();
 
-  const fieldErrors =
-    actionData?.status === 'error' ? actionData.error : undefined;
-  const formErrors =
-    actionData?.status === 'error' ? actionData.error?.[''] : undefined;
-  const hasFormErrors = Boolean(formErrors?.length);
-  const hasTitleErrors = Boolean(fieldErrors?.title?.length);
-  const hasContentErrors = Boolean(fieldErrors?.content?.length);
-  const formErrorId = hasFormErrors ? `${editFormId}-form-errors` : undefined;
-  const titleErrorId = hasTitleErrors
-    ? `${editFormId}-title-errors`
-    : undefined;
-  const contentErrorId = hasContentErrors
-    ? `${editFormId}-content-errors`
-    : undefined;
-
-  // Focus on the first element in the form that has an error whenever the actionData changes
-  useFocusInvalid(
-    editFormRef.current,
-    actionData?.status === 'error' && !isSavePending,
-  );
+  useFocusOnFormError(editFormRef.current, Boolean(form.errors?.length));
 
   return (
     <div className="p-4 h-full">
       {/* prevent the full page reload by using the Form component */}
       <Form
-        ref={editFormRef}
+        {...getFormProps(form)}
         method="POST"
         className="h-full"
         noValidate={isHydrated}
-        id={editFormId}
-        aria-invalid={hasFormErrors}
-        aria-describedby={formErrorId}
+        ref={editFormRef}
         tabIndex={-1} // allow programmatically focus on the form
       >
         <div className="h-full flex flex-col gap-6">
           <div className="grid gap-2">
-            <Label htmlFor={`${editFormId}-title`} className="block">
+            <Label htmlFor={fields.title.id} className="block">
               Title
             </Label>
             <Input
-              id={`${editFormId}-title`}
-              name="title"
-              defaultValue={data.remark.title}
-              required
-              maxLength={titleMaxLength}
-              aria-invalid={hasTitleErrors || undefined} // Only present when true (avoid using false for the border color red)
-              aria-describedby={titleErrorId}
               autoFocus
+              {...getInputProps(fields.title, { type: 'text' })}
             />
             <div className="min-h-[32px] px-4 pb-3 pt-1">
-              <ErrorList id={titleErrorId} errors={fieldErrors?.title} />
+              <ErrorList
+                id={fields.title.errorId}
+                errors={fields.title.errors}
+              />
             </div>
           </div>
           <div className="flex flex-col gap-2 grow">
-            <Label htmlFor={`${editFormId}-content`}>Content</Label>
-            <Textarea
-              id={`${editFormId}-content`}
-              className="grow"
-              name="content"
-              defaultValue={data.remark.content}
-              required
-              maxLength={contentMaxLength}
-              aria-invalid={hasContentErrors || undefined} // Only present when true
-              aria-describedby={contentErrorId}
-            />
+            <Label htmlFor={fields.content.id}>Content</Label>
+            <Textarea className="grow" {...getTextareaProps(fields.content)} />
             <div className="min-h-[32px] px-4 pb-3 pt-1">
-              <ErrorList id={contentErrorId} errors={fieldErrors?.content} />
+              <ErrorList
+                id={fields.content.errorId}
+                errors={fields.content.errors}
+              />
             </div>
           </div>
 
-          <ErrorList id={formErrorId} errors={formErrors} />
+          <ErrorList id={form.errorId} errors={form.errors} />
 
           <div className="flex justify-between">
-            <Button type="reset" variant="outline" form={editFormId}>
+            <Button type="reset" variant="outline" form={form.id}>
               <EraserIcon className="h-4 w-4" />
               <div className="hidden lg:block ml-2">Reset</div>
             </Button>
             <div className="grid grid-cols-2 gap-2">
-              <Button variant="outline" asChild form={editFormId}>
+              <Button variant="outline" asChild form={form.id}>
                 <Link to=".." relative="path">
                   <ResetIcon className="h-4 w-4" />
                   <div className="hidden lg:block ml-2">Cancel</div>
                 </Link>
               </Button>
-              <Button type="submit" disabled={isSavePending} form={editFormId}>
+              <Button type="submit" disabled={isSavePending} form={form.id}>
                 <UpdateIcon
                   className={`h-4 w-4 ${isSavePending ? 'animate-spin' : ''}`}
                 />
